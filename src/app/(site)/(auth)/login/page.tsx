@@ -37,7 +37,7 @@ function LoginContent() {
                     setError("An unexpected error occurred. Please try again.");
             }
             // Clear the error from URL to prevent it showing on refresh if user navigates away and back
-            router.replace('/auth/signin', {scroll: false});
+            router.replace('/login', {scroll: false});
         }
     }, [searchParams, router]);
 

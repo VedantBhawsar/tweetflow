@@ -74,7 +74,7 @@ function RegisterContent() {
                     router.push(searchParams?.get("callbackUrl") || "/dashboard");
                 } else {
                     // If direct sign-in fails, redirect to sign-in page for manual login
-                    setTimeout(() => router.push(`/auth/signin?email=${encodeURIComponent(email)}`), 2000);
+                    setTimeout(() => router.push(`/login?email=${encodeURIComponent(email)}`), 2000);
                 }
             }
         } catch (err) {
