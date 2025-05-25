@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TweetFlow
+
+![TweetFlow](./public/logo.png)
+
+## Automate Your Twitter Presence
+
+TweetFlow is a powerful platform that helps you automate and optimize your Twitter (X) presence. Create, schedule, and analyze your Twitter content with an intuitive workflow builder.
+
+## Features
+
+- **User Authentication**: Secure login and registration with email/password or Google OAuth
+- **Dashboard**: Comprehensive overview of your Twitter performance metrics
+- **Workflow Builder**: Create custom automation workflows with a drag-and-drop interface
+- **Analytics**: Track engagement, growth, and content performance
+- **Responsive Design**: Beautiful UI that works on desktop and mobile devices
+
+## Tech Stack
+
+- **Frontend**: Next.js 15 with App Router, React, TypeScript, TailwindCSS
+- **Authentication**: NextAuth.js with JWT strategy
+- **Database**: Prisma ORM with your choice of database (PostgreSQL recommended)
+- **Styling**: TailwindCSS for responsive design
+- **Deployment**: Ready to deploy on Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18.17 or later
+- npm or yarn
+- A database (PostgreSQL recommended)
+- Twitter Developer API keys (for production use)
+
+### Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Database
+DATABASE_URL="your-database-connection-string"
+
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-nextauth-secret"
+
+# OAuth Providers (optional)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+
+# Twitter API (for production)
+TWITTER_API_KEY="your-twitter-api-key"
+TWITTER_API_SECRET="your-twitter-api-secret"
+```
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/tweetflow.git
+cd tweetflow
+```
+
+2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Set up the database
+
+```bash
+npx prisma migrate dev
+```
+
+4. Start the development server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                  # Next.js App Router
+│   ├── (site)/          # Main site routes
+│   │   ├── (auth)/      # Authentication pages
+│   │   └── dashboard/   # Dashboard pages
+│   └── api/             # API routes
+├── components/          # React components
+├── lib/                 # Utility functions and configurations
+└── prisma/              # Database schema and migrations
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+The easiest way to deploy TweetFlow is to use [Vercel](https://vercel.com):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Follow the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more options.
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- [Next.js](https://nextjs.org) - The React Framework
+- [NextAuth.js](https://next-auth.js.org) - Authentication for Next.js
+- [Prisma](https://prisma.io) - Next-generation ORM
+- [TailwindCSS](https://tailwindcss.com) - Utility-first CSS framework
