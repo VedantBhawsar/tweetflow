@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// NextAuth.js Models
 model Account {
   id                String  @id @default(cuid()) @map("_id")
   userId            String
@@ -34,21 +35,6 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-  id             String    @id @default(cuid()) @map("_id")
-  name           String?
-  email          String    @unique
-  emailVerified  DateTime?
-  image          String?
-  hashedPassword String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  accounts Account[]
-  sessions Session[]
-  Tweet    Tweet[]
-}
-
 model VerificationToken {
   id         String   @id @default(cuid()) @map("_id")
   identifier String
@@ -58,20 +44,202 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Example Tweet model if you integrate it later
-model Tweet {
-  id          String    @id @default(cuid()) @map("_id")
-  content     String
-  scheduledAt DateTime?
-  postedAt    DateTime?
-  userId      String
-  user        User      @relation(fields: [userId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+// Core User Management
+model User {
+  id             String    @id @default(cuid()) @map("_id")
+  name           String?
+  email          String    @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  timezone       String?   @default("UTC")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  accounts         Account[]
+  sessions         Session[]
+  twitterAccounts  TwitterAccount[]
+  workflows        Workflow[]
+  tweets           Tweet[]
+  workflowRuns     WorkflowRun[]
 }
 
+// Twitter Integration
+model TwitterAccount {
+  id                String   @id @default(cuid()) @map("_id")
+  userId            String
+  twitterId         String   @unique
+  username          String
+  displayName       String?
+  profileImageUrl   String?
+  accessToken       String
+  accessTokenSecret String?
+  refreshToken      String?
+  expiresAt         DateTime?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tweets Tweet[]
+
+  @@unique([userId, twitterId])
+}
+
+// Workflow System
+model Workflow {
+  id          String      @id @default(cuid()) @map("_id")
+  userId      String
+  name        String
+  description String?
+  isActive    Boolean     @default(false)
+  config      Json        // Stores nodes, connections, and other workflow config
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflowRuns WorkflowRun[]
+  tweets       Tweet[]
+}
+
+model WorkflowRun {
+  id         String            @id @default(cuid()) @map("_id")
+  workflowId String
+  userId     String
+  status     WorkflowRunStatus @default(PENDING)
+  startedAt  DateTime          @default(now())
+  completedAt DateTime?
+  duration   Int?              // Duration in milliseconds
+  triggerData Json?            // Data that triggered the workflow
+  result     Json?             // Output/result of the workflow execution
+  errorMessage String?
+  executionLog Json?           // Step-by-step execution log
+
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([workflowId])
+  @@index([status])
+}
+
+enum WorkflowRunStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+// Tweet Management
+model Tweet {
+  id                String       @id @default(cuid()) @map("_id")
+  userId            String
+  workflowId        String?
+  twitterAccountId  String?
+  content           String
+  mediaUrls         String[]     @default([])
+  scheduledAt       DateTime?
+  postedAt          DateTime?
+  twitterId         String?      @unique // Twitter's tweet ID when posted
+  status            TweetStatus  @default(DRAFT)
+  parentTweetId     String?      // For reply threads
+  metadata          Json?        // Additional tweet data (hashtags, mentions, etc.)
+  retryCount        Int          @default(0)
+  errorMessage      String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflow       Workflow?       @relation(fields: [workflowId], references: [id])
+  twitterAccount TwitterAccount? @relation(fields: [twitterAccountId], references: [id])
+  analytics      TweetAnalytics?
+
+  @@index([userId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([twitterAccountId])
+}
+
+enum TweetStatus {
+  DRAFT
+  SCHEDULED
+  POSTED
+  FAILED
+  CANCELLED
+}
+
+// Analytics & Metrics
+model TweetAnalytics {
+  id            String   @id @default(cuid()) @map("_id")
+  tweetId       String   @unique
+  impressions   Int      @default(0)
+  likes         Int      @default(0)
+  retweets      Int      @default(0)
+  replies       Int      @default(0)
+  quotes        Int      @default(0)
+  clicks        Int      @default(0)
+  profileClicks Int      @default(0)
+  engagementRate Float   @default(0)
+  lastUpdated   DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  tweet Tweet @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+}
+
+model WorkflowAnalytics {
+  id           String   @id @default(cuid()) @map("_id")
+  workflowId   String
+  userId       String
+  date         DateTime // Date for daily aggregation
+  totalRuns    Int      @default(0)
+  successfulRuns Int    @default(0)
+  failedRuns   Int      @default(0)
+  avgDuration  Float?   // Average duration in milliseconds
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([workflowId, date])
+  @@index([userId])
+  @@index([date])
+}
+
+// Template System
+model WorkflowTemplate {
+  id          String   @id @default(cuid()) @map("_id")
+  name        String
+  description String?
+  category    String   @default("general")
+  config      Json     // Template workflow configuration
+  isPublic    Boolean  @default(false)
+  usageCount  Int      @default(0)
+  createdBy   String?  // Optional user who created template
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([isPublic])
+}
+
+// Email Subscriptions (Marketing)
 model SubscribeUser {
   id        String   @id @default(cuid()) @map("_id")
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+// Webhook Management
+model Webhook {
+  id        String      @id @default(cuid()) @map("_id")
+  userId    String
+  url       String
+  events    String[]    // Array of event types to listen for
+  secret    String?     // For webhook signature verification
+  isActive  Boolean     @default(true)
+  lastUsed  DateTime?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([userId])
 }
