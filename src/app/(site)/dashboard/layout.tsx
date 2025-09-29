@@ -249,9 +249,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col">
         <main className="flex-1 overflow-y-auto p-4 md:p-6 md:mt-0 mt-16">
-          {children}
+          <div className="mb-3">{children}</div>
         </main>
       </div>
     </div>

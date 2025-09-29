@@ -26,6 +26,7 @@ import { Badge } from '@/components/ui/badge'
 import PageHeader from '@/components/common/pageHeader'
 import WorkflowCard from '@/components/common/workflowCard'
 import WorkflowCardSkeleton from '@/components/loaders/workflowCardSkeleton'
+import StatCard from '@/components/common/statCard'
 
 const workflows = [
   {
@@ -60,6 +61,83 @@ const workflows = [
   },
 ]
 
+const stats = [
+  {
+    icon: <Zap />,
+    label: 'Active Workflows',
+    value: 3,
+    bgColor: 'bg-sky-500/10',
+    iconColor: 'text-sky-500',
+  },
+  {
+    icon: <Calendar />,
+    label: 'Scheduled Tweets',
+    value: 12,
+    bgColor: 'bg-purple-500/10',
+    iconColor: 'text-purple-500',
+  },
+  {
+    icon: <BarChart2 />,
+    label: 'Engagement Rate',
+    value: '4.2%',
+    bgColor: 'bg-green-500/10',
+    iconColor: 'text-green-500',
+  },
+  {
+    icon: <BarChart2 />,
+    label: 'Engagement Rate',
+    value: '4.2%',
+    bgColor: 'bg-green-500/10',
+    iconColor: 'text-green-500',
+  },
+]
+
+const templateCards = [
+  {
+    title: 'Auto-Responder',
+    description: 'Automatically respond to mentions with customizable messages',
+    badge: {
+      label: 'Popular',
+      show: true,
+      className: 'bg-sky-500/10 text-sky-500 hover:bg-sky-500/20',
+    },
+    steps: [
+      { icon: Twitter, label: 'Mention', color: 'text-sky-500' },
+      { icon: Twitter, label: 'Reply', color: 'text-sky-500' },
+    ],
+    link: '/dashboard/workflows/new?template=auto-responder',
+  },
+  {
+    title: 'Content Scheduler',
+    description:
+      'Schedule tweets at optimal times based on audience engagement',
+    badge: {
+      label: 'Popular',
+      show: true,
+      className: 'bg-sky-500/10 text-sky-500 hover:bg-sky-500/20',
+    },
+    steps: [
+      { icon: Clock, label: 'Schedule', color: 'text-purple-500' },
+      { icon: Twitter, label: 'Tweet', color: 'text-sky-500' },
+    ],
+    link: '/dashboard/workflows/new?template=content-scheduler',
+  },
+  {
+    title: 'Follower Welcome',
+    description: 'Send a welcome DM to new followers automatically',
+    badge: {
+      label: '',
+      show: false, // no badge for this one
+      className: '',
+    },
+    steps: [
+      { icon: Twitter, label: 'New Follower', color: 'text-sky-500' },
+      { icon: Twitter, label: 'Send DM', color: 'text-sky-500' },
+    ],
+    link: '/dashboard/workflows/new?template=follower-welcome',
+  },
+]
+
 export default function DashboardPage() {
   return (
     <div className="h-full flex flex-col">
@@ -70,42 +148,10 @@ export default function DashboardPage() {
       />
 
       {/* Dashboard stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card>
-          <CardContent className="p-6 flex items-center">
-            <div className="p-3 rounded-lg bg-sky-500/10 mr-4">
-              <Zap className="h-6 w-6 text-sky-500" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Active Workflows</p>
-              <p className="text-2xl font-bold">3</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6 flex items-center">
-            <div className="p-3 rounded-lg bg-purple-500/10 mr-4">
-              <Calendar className="h-6 w-6 text-purple-500" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Scheduled Tweets</p>
-              <p className="text-2xl font-bold">12</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6 flex items-center">
-            <div className="p-3 rounded-lg bg-green-500/10 mr-4">
-              <BarChart2 className="h-6 w-6 text-green-500" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Engagement Rate</p>
-              <p className="text-2xl font-bold">4.2%</p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        {stats.map((stat, index) => (
+          <StatCard key={index} {...stat} />
+        ))}
       </div>
 
       {/* Tabs */}
@@ -121,7 +167,7 @@ export default function DashboardPage() {
             <h2 className="text-xl font-semibold">My Workflows</h2>
             <Button asChild>
               <Link href="/dashboard/workflows/new">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4" />
                 Create Workflow
               </Link>
             </Button>
@@ -161,113 +207,19 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Template Card 1 */}
-            <Card className="hover:border-primary transition-colors group">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-base">Auto-Responder</CardTitle>
-                  <Badge
-                    variant="secondary"
-                    className="bg-sky-500/10 text-sky-500 hover:bg-sky-500/20"
-                  >
-                    Popular
-                  </Badge>
-                </div>
-                <CardDescription>
-                  Automatically respond to mentions with customizable messages
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <div className="flex items-center">
-                    <Twitter className="h-4 w-4 mr-2 text-sky-500" />
-                    <span>Mention</span>
-                  </div>
-                  <ArrowRight className="h-4 w-4 mx-2" />
-                  <div className="flex items-center">
-                    <Twitter className="h-4 w-4 mr-2 text-sky-500" />
-                    <span>Reply</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Link
-                  href="/dashboard/workflows/new?template=auto-responder"
-                  className="text-xs text-primary hover:underline"
-                >
-                  Use template
-                </Link>
-              </CardFooter>
-            </Card>
-
-            {/* Template Card 2 */}
-            <Card className="hover:border-primary transition-colors group">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-base">Content Scheduler</CardTitle>
-                  <Badge
-                    variant="secondary"
-                    className="bg-sky-500/10 text-sky-500 hover:bg-sky-500/20"
-                  >
-                    Popular
-                  </Badge>
-                </div>
-                <CardDescription>
-                  Schedule tweets at optimal times based on audience engagement
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2 text-purple-500" />
-                    <span>Schedule</span>
-                  </div>
-                  <ArrowRight className="h-4 w-4 mx-2" />
-                  <div className="flex items-center">
-                    <Twitter className="h-4 w-4 mr-2 text-sky-500" />
-                    <span>Tweet</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Link
-                  href="/dashboard/workflows/new?template=content-scheduler"
-                  className="text-xs text-primary hover:underline"
-                >
-                  Use template
-                </Link>
-              </CardFooter>
-            </Card>
-
-            {/* Template Card 3 */}
-            <Card className="hover:border-primary transition-colors group">
-              <CardHeader>
-                <CardTitle className="text-base">Follower Welcome</CardTitle>
-                <CardDescription>
-                  Send a welcome DM to new followers automatically
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <div className="flex items-center">
-                    <Twitter className="h-4 w-4 mr-2 text-sky-500" />
-                    <span>New Follower</span>
-                  </div>
-                  <ArrowRight className="h-4 w-4 mx-2" />
-                  <div className="flex items-center">
-                    <Twitter className="h-4 w-4 mr-2 text-sky-500" />
-                    <span>Send DM</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Link
-                  href="/dashboard/workflows/new?template=follower-welcome"
-                  className="text-xs text-primary hover:underline"
-                >
-                  Use template
-                </Link>
-              </CardFooter>
-            </Card>
+            {templateCards.map((card, index) => (
+              <WorkflowCard
+                key={index}
+                description={card.description}
+                title={card.title}
+                active={false}
+                footerText={card.badge.label}
+                linkHref={card.link}
+                linkLabel={card.badge.label}
+                steps={card.steps}
+                className="hover:border-primary transition-colors group"
+              />
+            ))}
           </div>
         </TabsContent>
       </Tabs>
